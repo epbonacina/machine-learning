@@ -30,6 +30,7 @@ if __name__ == "__main__":
 
         testing_data_path = os.path.join(data_folder, "testing.csv")
         X_testing, y_testing = _load_x_and_y(testing_data_path)
+        x_testing_indexes = X_testing.index
 
         for n in [1, 3, 5, 7]:
             classifier = KNeighborsClassifier(n_neighbors=n)
@@ -42,6 +43,11 @@ if __name__ == "__main__":
 
             print(f"[{data_name:14} {n=}] Measured accuracy: {accuracy:.2%}")
 
-            for i, (neighbors, distances) in enumerate(zip(nearest_neighbors, distances)):
+            for i, (neighbors, distances, prediction) in enumerate(zip(nearest_neighbors, distances, predictions)):
                 neighbors = X_training.iloc[neighbors]
-                print(f"-> N{i+1}: {neighbors.index.values} {distances}")
+                print(
+                    f"-> {x_testing_indexes[i]}: "
+                    f"predicted class={prediction} "
+                    f"nearest_neighbors={neighbors.index.values} "
+                    f"distances={distances}"
+                )
