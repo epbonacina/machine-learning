@@ -1,13 +1,16 @@
 import os
 
+import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 
+np.set_printoptions(precision=2)
+
 
 def _load_x_and_y(path: str):
-    df = pd.read_csv(path, delimiter="\t")
-    X = df.drop(["ID", "class"], axis=1)
+    df = pd.read_csv(path, delimiter="\t", index_col="ID")
+    X = df.drop(["class"], axis=1)
     y = df["class"]
     return X, y
 
@@ -35,5 +38,10 @@ if __name__ == "__main__":
             predictions = classifier.predict(X_testing)
             accuracy = accuracy_score(y_testing, predictions)
 
+            distances, nearest_neighbors = classifier.kneighbors(X_testing, n_neighbors=n)
+
             print(f"[{data_name:14} {n=}] Measured accuracy: {accuracy:.2%}")
 
+            for i, (neighbors, distances) in enumerate(zip(nearest_neighbors, distances)):
+                neighbors = X_training.iloc[neighbors]
+                print(f"-> N{i+1}: {neighbors.index.values} {distances}")
